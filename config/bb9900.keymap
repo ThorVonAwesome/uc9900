@@ -14,6 +14,7 @@
 
 #define SYM 1
 #define UPPER 2
+#define HID_IO_USAGE_FWD_TO_JOYSTICK 2
 
  
 
@@ -35,6 +36,24 @@
             bindings = <&out &kp>;
         };
     };
+    behaviors {
+        hidiokp: hid_io_key_press {
+            compatible = "zmk,behavior-hid-io-key-press";
+            #binding-cells = <1>;
+        };
+    };
+
+    zip_fwd_to_hid_io: zip_forward_fwd_to_hid_io {
+        compatible = "zmk,input-processor-fwd-to-hid-io";
+        #input-processor-cells = <0>;
+        usage = <HID_IO_USAGE_FWD_TO_JOYSTICK>;
+    };
+
+    hidiokp_ibl {
+        compatible = "zmk,input-behavior-listener";
+        device = <&hidiokp>;
+        input-processors = <&zip_fwd_to_hid_io>;
+    };
 
     keymap {
         compatible = "zmk,keymap";
@@ -51,9 +70,9 @@
 // |  LShift  |  Z  |  X  |  C  |  V  |  B  |  N  |  M  |  <  |  >  |  ;  |  RShift  |  
 //        |  Fn  |  LCtrl  |  Alt   |      SPACE      |   Alt   |  RCtrl   |  Fn   |  
 //        -----------------------------------------------------------------------------------------------------------------
-            &kp LEFT                      &mkp LCLK         &mkp LCLK      &kp F21   &kp F22 
-&kp UP   &kp DOWN &kp RIGHT               &mkp RCLK                       &kp  F23      &kp F24
-&kp ESC    &kp CAPS  &kp C_PLAY &kp K_MUTE    &kp LBKT   &kp RBKT   &kp FSLH   &kp MINUS  &kp  EQUAL &kp BACKSLASH                                                                                  
+            &kp LEFT                      &mkp LCLK         &mkp LCLK      &hidiokp 0   &hidiokp 1 
+&kp UP   &kp DOWN &kp RIGHT               &mkp RCLK                       &hidiokp 2      &hidiokp 3
+&kp ESC    &hidiokp 4  &hidiokp 5 &kp K_MUTE    &kp LBKT   &kp RBKT   &kp FSLH   &kp MINUS  &kp  EQUAL &kp BACKSLASH                                                                                  
 &kp GRAVE  &kp N1        &kp N2     &kp N3   &kp N4     &kp N5     &kp N6     &kp N7     &kp N8    &kp N9  &kp N0 &kp BSPC
 &kp TAB     &kp Q         &kp W      &kp E    &kp R      &kp T      &kp Y      &kp U      &kp I     &kp O   &kp P
 &kp SQT     &kp A         &kp S      &kp D    &kp F      &kp G      &kp H      &kp J      &kp K     &kp L   &kp SEMICOLON &kp ENTER        
